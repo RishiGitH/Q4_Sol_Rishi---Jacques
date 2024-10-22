@@ -9,20 +9,23 @@ const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
 const commitment: Commitment = "confirmed";
 const connection = new Connection("https://api.devnet.solana.com", commitment);
 
-const token_decimals = 1_000_000n;
+const token_decimals = 1_000_0000_000n;
 
 // Mint address
-const mint = new PublicKey("<mint address>");
+const mint = new PublicKey("J89Etzg3UhjWjcaGr1bKiPdcFbwhGSqVJQGo41itBDZc");
 
 (async () => {
     try {
         // Create an ATA
-        // const ata = ???
-        // console.log(`Your ata is: ${ata.address.toBase58()}`);
+        const ata = await getOrCreateAssociatedTokenAccount(connection,keypair,mint,keypair.publicKey);
+        console.log(`Your ata is: ${ata.address.toBase58()}`);
 
-        // Mint to ATA
-        // const mintTx = ???
-        // console.log(`Your mint txid: ${mintTx}`);
+        // // Mint to ATA
+        const mintTx = await mintTo(connection,keypair,mint,ata.address,keypair.publicKey, 1n * token_decimals);
+        console.log(`Your mint txid: ${mintTx}`);
+        const info = await connection.getTokenAccountBalance(keypair.publicKey);
+        if (info.value.uiAmount == null) throw new Error('No balance found');
+        console.log('Balance (using Solana-Web3.js): ', info.value.uiAmount);
     } catch(error) {
         console.log(`Oops, something went wrong: ${error}`)
     }

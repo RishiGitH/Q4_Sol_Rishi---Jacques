@@ -4,13 +4,15 @@ import wallet from "../wba-wallet.json"
 
 // Import our keypair from the wallet file
 const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
-
+const token_decimals = 1_000_000;
 //Create a Solana devnet connection
 const commitment: Commitment = "confirmed";
 const connection = new Connection("https://api.devnet.solana.com", commitment);
 
 (async () => {
     try {
+        const mint = await createMint(connection, keypair,  keypair.publicKey, null, 10 )
+        console.log(mint.toBase58());
         // Start here
         // const mint = ???
     } catch(error) {
